@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="kr.bit.mapper.BoardMapper">
+
+    <sql id="search">
+        <if test="type=='writer'">
+            where writer like concat('%',#{keyword},'%')
+        </if>
+        <if test="type=='title'">
+            where title like concat('%',#{keyword},'%')
+        </if>
+        <if test="type=='content'">
+            where content like concat('%',#{keyword},'%')
+        </if>
+    </sql>
+
+    <sql id="food_search">
+        where foodCategory like concat('%',#{searchFood},'%')
+    </sql>
+
+    <select id="selectSearchList" resultType="kr.bit.entity.Food" parameterType="kr.bit.entity.Food">
+        select * from tblFood
+        <include refid="food_search"/>
+    </select>
+
+    <select id="findById" resultType="kr.bit.entity.Image">
+        select * from images where id = #{id}
+    </select>
+
+    <select id="findByUserId" resultType="kr.bit.entity.Image">
+        SELECT * FROM images WHERE user_id = #{userId}
+    </select>
+
+    <select id="getMyDrug" resultType="kr.bit.entity.Image">
+        select * from images where id=#{id}
+    </select>
+
+    <select id="getFoodIngredients" parameterType="string" resultType="kr.bit.entity.Food">
+        select * from tblFood where foodName=#{foodName}
+    </select>
+
+    <select id="getFoodIngredientsByDrugName" parameterType="string" resultType="string">
+        SELECT foodIngredient
+        FROM DrugList
+        WHERE drugName = #{drugName}
+    </select>
+
+    <select id="login" resultType="kr.bit.entity.Member"
+            parameterType="kr.bit.entity.Member">
+        select * from tblMember where memID=#{memID} and memPwd=#{memPwd}
+    </select>
+
+    <select id="registerCheck" resultType="kr.bit.entity.Member">
+        select * from tblMember where memID=#{memID}
+    </select>
+
+    <insert id="memRegister" parameterType="kr.bit.entity.Member">
+        insert into
+            tblMember(memID,memPwd,memName,memPhone,memAddr,latitude,longitude)
+        values(#{memID},#{memPwd},#{memName},"0","0",0.0,"0")
+    </insert>
+</mapper>

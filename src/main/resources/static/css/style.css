@@ -1,0 +1,106 @@
+@charset "UTF-8";
+.jumbotron{
+    background-image: url('../img/bg_1.jpg');
+    background-size: cover;
+    text-shadow: black 0.2em 0.2em 0.2em;
+    color:white;
+}
+.filebox .upload-name {
+    display: inline-block;
+    height: 40px;
+    padding: 0 10px;
+    vertical-align: middle;
+    border: 1px solid #dddddd;
+    width: 78%;
+    color: #999999;
+}
+.filebox label {
+    display: inline-block;
+    padding: 10px 20px;
+    color: #fff;
+    vertical-align: middle;
+    background-color: #999999;
+    cursor: pointer;
+    height: 40px;
+    margin-left: 10px;
+}
+.filebox input[type="file"] {
+    position: absolute;
+    width: 0;
+    height: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+}
+
+#root {
+    width: 100%;
+    margin: 0 auto;
+    max-width: 800px;
+}
+
+.title {
+    text-align: center;
+}
+
+.contents {
+    display: flex;
+    flex-direction: row;
+    margin-top: 30px;
+}
+
+.dropzone {
+    width: 98%;
+    margin: 1%;
+    border: 2px dashed #3498db !important;
+    border-radius: 5px;
+    -webkit-transition: .2s;
+    transition: .2s;
+}
+
+.dropzone.dz-drag-hover {
+    border: 2px solid #3498db !important;
+}
+
+.dz-message.needsclick img {
+    width: 50px;
+    display: block;
+    margin: auto;
+    opacity: .6;
+    margin-bottom: 15px;
+}
+
+span.plus {
+    display: none;
+}
+
+.dropzone.dz-started .dz-message {
+    display: inline-block !important;
+    width: 120px;
+    float: right;
+    border: 1px solid rgba(238, 238, 238, 0.36);
+    border-radius: 30px;
+    height: 120px;
+    margin: 16px;
+    -webkit-transition: .2s;
+    transition: .2s;
+}
+
+.dropzone.dz-started .dz-message span.text {
+    display: none;
+}
+
+.dropzone.dz-started .dz-message span.plus {
+    display: block;
+    font-size: 70px;
+    color: #AAA;
+    line-height: 110px;
+}
+
+#preview {
+    width: 800px; /* 원하는 너비로 설정 */
+    height: auto; /* 비율을 유지하면서 높이를 자동으로 조정 */
+    margin-top: 10px;
+}
+
+/*# sourceMappingURL=ss.css.map */
