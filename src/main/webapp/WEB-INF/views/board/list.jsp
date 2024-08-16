@@ -3,7 +3,10 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
 <c:set var="cpath" value="${pageContext.request.contextPath}"/>
+<c:set var="mvo" value="${SPRING_SECURITY_CONTEXT.authentication.principal}"/>
+<c:set var="auth" value="${SPRING_SECURITY_CONTEXT.authentication.authorities}"/>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,13 +17,11 @@
     <link rel="stylesheet" type="text/css" href="${cpath}/resources/css/style.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-    <link rel="stylesheet" href="https://rawgit.com/enyo/dropzone/master/dist/dropzone.css" />
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://rawgit.com/enyo/dropzone/master/dist/dropzone.js"></script>
     <style>
         #camera-stream, #snapshot {
             width: 75%;
@@ -28,6 +29,7 @@
         }
     </style>
     <script type="text/javascript">
+
         $(document).ready(function(){
             var result = '${result}';
             checkModal(result);
@@ -49,7 +51,7 @@
                 $(".upload-name").val(filename);
             });
 
-            var memID = "${sessionScope.mvo != null ? sessionScope.mvo.memID : '0'}";
+            var memID = "${mvo.member.memID}";
 
             // 파일 업로드 버튼 클릭 시
             $("#fileUploadButton").on('click', function() {
@@ -171,7 +173,7 @@
             $.ajax({
                 type:"get",
                 url:"${cpath}/board/drugSearchList",
-                data : { memID: "${mvo.memID}"},
+                data : { memID: "${mvo.member.memID}"},
                 success: function(result){
                     $('#drugSearchList').empty();
                     if(result.length >=1){
@@ -237,6 +239,7 @@
                     <h2 class="title">약 검색</h2>
                     <hr>
                     <form id="fileUploadForm" method="POST" enctype="multipart/form-data">
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                         <div class="filebox" style="display: flex; align-items: center;">
                             <input class="upload-name" value="첨부파일" placeholder="첨부파일" disabled style="flex: 1; margin-right: 10px;">
                             <label for="file" style="margin: 0;">파일찾기</label>

@@ -16,4 +16,11 @@ public interface BoardMapper {
     public Image findById(Long id);
     public List<Image> findByUserId(String userId);
     public String getFoodIngredientsByDrugName(String drugName);
+    public Member findByMemID(String username);
+    public void authInsert(AuthVO saveVO);
+    public List<Member> getAllMembers();
+    public void deleteMember(String memID);
+    public void deleteMemberAuth(String memID);
+    public void deleteMemberDrugList(String memID);
+
 }

@@ -1,9 +1,11 @@
 package kr.bit.controller;
 
 import jakarta.servlet.http.HttpSession;
+import kr.bit.entity.AuthVO;
 import kr.bit.mapper.BoardMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import kr.bit.entity.Member;
@@ -11,6 +13,8 @@ import kr.bit.service.BoardService;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("login/*")
@@ -22,19 +26,14 @@ public class LoginController {
     @Autowired
     BoardService boardService;
 
-    @RequestMapping("/loginProcess")
-    public String login(Member vo, HttpSession session) {
-        Member mvo=boardService.login(vo);
-        if(mvo!=null) {
-            session.setAttribute("mvo", mvo); // 객체바인딩
-        }
-
-        return "redirect:/board/list";
+    @RequestMapping("/login")
+    public String loginPage() {
+        return "login/login"; // login.jsp 페이지를 반환
     }
 
     @RequestMapping("/join")
     public String join(){
-        return "board/join";
+        return "login/join";
     }
 
     @RequestMapping("/memRegisterCheck")
@@ -66,12 +65,23 @@ public class LoginController {
             return "redirect:/login/join";
         }
 
+        m.setMemPwd(memPwd1);
         int result=boardService.memRegister(m);
         if(result==1) {
             rttr.addFlashAttribute("msgType", "성공 메시지");
             rttr.addFlashAttribute("msg", "회원가입 성공!");
 
-            return "redirect:/board/list";
+            List<AuthVO> list=m.getAuthList();
+            for(AuthVO authVO: list) {
+                if(authVO.getAuth()!=null) {
+                    AuthVO saveVO=new AuthVO();
+                    saveVO.setMemID(m.getMemID());
+                    saveVO.setAuth(authVO.getAuth());
+                    boardService.authInsert(saveVO);
+                }
+            }
+
+            return "redirect:/login/login";
         }else {
             rttr.addFlashAttribute("msgType", "실패 메시지");
             rttr.addFlashAttribute("msg", "이미 존재하는 회원입니다.");
@@ -79,10 +89,9 @@ public class LoginController {
         }
     }
 
-    @RequestMapping("/logoutProcess")
-    public String logout(HttpSession session) {
-        session.invalidate();
-        return "redirect:/board/list";
+    @GetMapping("/access-denied")
+    public String showAccessDenied() {
+        return "access-denied";
     }
 
 }

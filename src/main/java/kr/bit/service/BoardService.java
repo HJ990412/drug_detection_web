@@ -7,6 +7,7 @@ import kr.bit.entity.*;
 public interface BoardService {
 
     public Member login(Member vo);
+    public Member findByMemID(String username);
     public Member registerCheck(String memID);
     public int memRegister(Member m);
     public List<Food> getSearchList(Food food);
@@ -15,4 +16,7 @@ public interface BoardService {
     public Image getImageById(Long id);
     public List<Image> getImageByUserId(String userId);
     public String getFoodIngredientsByDrugName(String drugName);
+    public void authInsert(AuthVO saveVO);
+    public List<Member> getAllMembers();
+    public void deleteMember(String memID);
 }

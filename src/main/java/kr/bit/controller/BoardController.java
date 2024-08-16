@@ -83,7 +83,7 @@ public class BoardController {
         String userId = payload.get("user_id");
         String image = null;
         if (file != null) {
-            try {
+            try { 
                 byte[] fileContent = file.getBytes();
                 image = "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(fileContent);
             } catch (IOException e) {

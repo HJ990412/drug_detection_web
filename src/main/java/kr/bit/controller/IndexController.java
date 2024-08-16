@@ -14,7 +14,7 @@ public class IndexController {
     @RequestMapping("/")
     public String Index(){
 
-        return "board/list";
+        return "login/login";
 
     }
 }

@@ -2,6 +2,21 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="kr.bit.mapper.BoardMapper">
 
+    <resultMap type="kr.bit.entity.Member" id="memberMap">
+        <id property="memIdx" column="memIdx"/>
+        <result property="memID" column="memID"/>
+        <result property="memPwd" column="memPwd"/>
+        <result property="memName" column="memName"/>
+        <collection property="authList" resultMap="authMap">
+        </collection>
+    </resultMap>
+
+    <resultMap type="kr.bit.entity.AuthVO" id="authMap">
+        <id property="no" column="no"/>
+        <result property="memID" column="memID"/>
+        <result property="auth" column="auth"/>
+    </resultMap>
+
     <sql id="search">
         <if test="type=='writer'">
             where writer like concat('%',#{keyword},'%')
@@ -50,13 +65,42 @@
         select * from tblMember where memID=#{memID} and memPwd=#{memPwd}
     </select>
 
+    <select id="findByMemID" resultMap="memberMap">
+        select * from tblMember mem LEFT OUTER JOIN mem_auth auth on
+            mem.memID=auth.memID where mem.memID=#{username}
+
+    </select>
+
     <select id="registerCheck" resultType="kr.bit.entity.Member">
         select * from tblMember where memID=#{memID}
     </select>
 
+    <select id="getAllMembers" resultMap="memberMap">
+        SELECT mem.memIdx, mem.memID, mem.memPwd, mem.memName, auth.auth
+        FROM tblMember mem
+        LEFT JOIN mem_auth auth ON mem.memID = auth.memID
+    </select>
+
     <insert id="memRegister" parameterType="kr.bit.entity.Member">
         insert into
-            tblMember(memID,memPwd,memName,memPhone,memAddr,latitude,longitude)
-        values(#{memID},#{memPwd},#{memName},"0","0",0.0,"0")
+            tblMember(memIdx,memID,memPwd,memName)
+        values((select IFNULL(MAX(memIdx)+1,1) from tblMember mem) ,
+               #{memID},#{memPwd},#{memName})
     </insert>
+
+    <insert id="authInsert" parameterType="kr.bit.entity.AuthVO">
+        INSERT INTO mem_auth(memID, auth) values(#{memID}, #{auth})
+    </insert>
+
+    <delete id="deleteMember">
+        DELETE FROM tblMember WHERE memID = #{memID}
+    </delete>
+
+    <delete id="deleteMemberAuth">
+        DELETE FROM mem_auth WHERE memID = #{memID}
+    </delete>
+
+    <delete id="deleteMemberDrugList">
+        DELETE FROM images WHERE user_id = #{memID}
+    </delete>
 </mapper>

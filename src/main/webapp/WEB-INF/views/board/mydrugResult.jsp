@@ -3,7 +3,10 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
 <c:set var="cpath" value="${pageContext.request.contextPath}"/>
+<c:set var="mvo" value="${SPRING_SECURITY_CONTEXT.authentication.principal}"/>
+<c:set var="auth" value="${SPRING_SECURITY_CONTEXT.authentication.authorities}"/>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,6 +20,17 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript">
+        function logout(){
+            $.ajax({
+                url : "${cpath}/logout",
+                type : "post",
+                success : function(){
+                    location.href="${cpath}/login/login";
+                },
+                error : function(){ alert("error"); }
+            });
+        }
+
         $(document).ready(function(){
             var result='${result}';
             checkModal(result);
@@ -32,36 +46,6 @@
             });
 
             getDrugSearchList();
-
-            $("#regBtn").click(function(){
-                location.href="${cpath}/board/register";
-            });
-            //페이지 번호 클릭시 이동하기
-            var pageFrm=$("#pageFrm");
-            $(".paginate_button a").on("click", function(e){
-                e.preventDefault(); // a tag 기능 막음
-                var page=$(this).attr("href");
-                pageFrm.find("#page").val(page);
-                pageFrm.submit();
-            });
-            //검색 페이지 번호 클릭시 이동
-            var searchFrm=$("#searchFrm");
-            $(".paginate_button a").on("click", function(e){
-                e.preventDefault(); // a tag 기능 막음
-                var search=$(this).attr("href");
-                searchFrm.find("#searchPage").val(search);
-                searchFrm.submit();
-            });
-            // 상세보기 클릭시 이동하기
-            $(".move").on("click", function(e){
-                e.preventDefault();
-                var idx=$(this).attr("href");
-                var tag="<input type='hidden' name='idx' value='"+idx+"'/>";
-                pageFrm.append(tag);
-                pageFrm.attr("action","${cpath}/board/get");
-                pageFrm.attr("method","get");
-                pageFrm.submit();
-            });
 
             $(".moveMyDrug").on("click", function(e){
                e.preventDefault();

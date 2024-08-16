@@ -3,6 +3,9 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
+<c:set var="mvo" value="${SPRING_SECURITY_CONTEXT.authentication.principal}"/>
+<c:set var="auth" value="${SPRING_SECURITY_CONTEXT.authentication.authorities}"/>
 <c:set var="cpath" value="${pageContext.request.contextPath}"/>
 <!DOCTYPE html>
 <html lang="en">
@@ -17,24 +20,23 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript">
-        $(document).ready(function(){
-            var result='${result}';
-            checkModal(result);
 
-            $('#listBtn').click(function() {
-                var formData = $("<form>", {
-                    "method": "post",
-                    "action": "${cpath}/board/list"
-                });
+        $(document).ready(function() {
 
-                $("body").append(formData);
-                formData.submit();
+            $("#searchFood").click(function () {
+                var loginInfo = "로그인이 필요합니다. 로그인 해주세요.";
+                $("#loginInfo").html(loginInfo);
+                $("#loginModal .modal-body").removeClass('alert-success').addClass('alert-warning');
+                $("#loginModalLabel").text("로그인");
+                $("#loginModal").modal("show");
             });
 
-            getDrugSearchList();
+            <security:authorize access="isAuthenticated()">
+                getDrugSearchList();
+            </security:authorize>
 
-            $("#file").on('change', function(){ // 값이 변경되면
-                if(window.FileReader){// modern browser
+            $("#file").on('change', function () { // 값이 변경되면
+                if (window.FileReader) {// modern browser
                     var filename = $(this)[0].files[0].name;
                 } else {// old IE
                     var filename = $(this).val().split('/').pop().split('\\').pop(); // 파일명만 추출
@@ -46,6 +48,15 @@
         });
 
         var foodIngredient = "${foodIngredient}";
+
+        function redirectBasedOnAuth() {
+            <security:authorize access="isAuthenticated()">
+            window.location.href = '${cpath}/board/list';
+            </security:authorize>
+            <security:authorize access="isAnonymous()">
+            window.location.href = '${cpath}/login/login'
+            </security:authorize>
+        }
 
         function getSearchList(){
             $.ajax({
@@ -64,7 +75,9 @@
                         });
                     }
                 },
-                error : function(){alert("error");}
+                error: function() {
+                    alert("음식검색오류");
+                }
             });
         }
 
@@ -128,7 +141,7 @@
                     }
                 },
                 error: function() {
-                    alert("error");
+                    alert("위험성분체크오류");
                 }
             });
         }
@@ -150,7 +163,7 @@
                     }
                 },
                 error: function(){
-                    alert("error");
+                    alert("약검색리스트오류");
                 }
             });
         }
@@ -170,17 +183,6 @@
             $("#foodModal .modal-body").removeClass('alert-danger').addClass('alert-success');
             $("#modal-type").text("안전");
             $("#foodModal").modal("show");
-        }
-
-        function checkModal(result) {
-            if(result==''){
-                return;
-            }
-            if(parseInt(result)>0){
-                // 새로운 다이얼로그 창 띄우기
-                $(".modal-body").html("게시글 "+parseInt(result)+"번 등록");
-            }
-            $("#myModal").modal("show");
         }
 
         function readURL(input) {
@@ -203,8 +205,8 @@
 <body>
 <div class="card">
     <div class="card-header">
-        <div class="jumbotron jumbotron-fluid" style="cursor: pointer;" onclick="location.href='${cpath}/board/list'">
-            <div class="container">
+        <div class="jumbotron jumbotron-fluid" style="cursor: pointer;" id="jumbotron" onclick="redirectBasedOnAuth()">
+        <div class="container">
                 <h1>DRUG-FOOD</h1>
                 <p>Detection & Search</p>
             </div>
@@ -230,7 +232,7 @@
                     </div>
                     <hr>
                     <div>
-                        <button data-btn="list" class="btn btn-sm btn-info" id="listBtn">돌아가기</button>
+                        <button data-btn="list" class="btn btn-sm btn-info" onclick="redirectBasedOnAuth()" >돌아가기</button>
                     </div>
                 </div>
                 <!-- Modal -->
@@ -244,6 +246,23 @@
                                 <p id="foodInfo"></p>
                                 <div class="text-right">
                                     <button type="button" class="btn btn-danger" data-dismiss="modal">닫기</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end Modal -->
+                <!-- Modal -->
+                <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title" id="loginModalLabel">로그인</h3>
+                            </div>
+                            <div class="modal-body">
+                                <p id="loginInfo"></p>
+                                <div class="text-right">
+                                    <button type="button" class="btn btn-primary" data-dismiss="modal">확인</button>
                                 </div>
                             </div>
                         </div>

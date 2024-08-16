@@ -1,17 +1,27 @@
+
+create table tblMember(
+                          memIdx int not null,
+                          memID varchar(50) not null,
+                          memPwd varchar(68) not null,
+                          memName varchar(50) not null,
+                          primary key(memID)
+);
+
+create table mem_auth(
+                         no int not null auto_increment,
+                         memID varchar(50) not null,
+                         auth varchar(50) not null,
+                         primary key(no),
+                         constraint fk_member_auth foreign key(memID) references tblMember(memID)
+);
+
 select * from tblBoard;
+select * from mem_auth;
 select * from tblMember;
 select * from tblFood;
 select * from tblDrugSearch;
 
-delete from tblDrugSearch where memID='hong1';
-
-create table tblDrugSearch (
-    idx bigint auto_increment primary key,
-    memID Char(36),
-    filePath varchar(255),
-    drugName varchar(255),
-    foodIngredient varchar(255)
-);
+delete from tblDrugSearch where memID='roh3';
 
 CREATE TABLE DrugList (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -43,3 +53,5 @@ delete from tblMember where memID='hong4';
 
 drop table tblDrugSearch;
 drop table images;
+drop table tblMember;
+drop table mem_auth;
